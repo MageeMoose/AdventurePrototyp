@@ -7,10 +7,16 @@ public class PlayerMovment : MonoBehaviour
     [SerializeField] float moveSpeed = 5f;
     [SerializeField] Rigidbody2D rb;
     [SerializeField] Animator animator;
-
+    [SerializeField] GameObject interactIcon;
+    
+    private Vector2 boxSize = new Vector2(0.1f,1f);
     Vector2 movement;
 
-    // Update is called once per frame
+
+    private void Start()
+    {
+        interactIcon.SetActive(false);
+    }
     void Update()
     {
 
@@ -32,18 +38,30 @@ public class PlayerMovment : MonoBehaviour
         rb.MovePosition(rb.position + movement * moveSpeed * Time.fixedDeltaTime);
     }
 
-    public void OpenInteractiveObject()
+    public void OpenInteractiveIcon()
     {
-
+        interactIcon.SetActive(true);
     }
 
-    public void CloseInteractiveObject()
+    public void CloseInteractiveIcon()
     {
-
+        interactIcon.SetActive(false);
     }
 
     public void CheckInteraction()
     {
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(transform.position, boxSize, 0, Vector2.zero);
 
+        if(hits.Length > 0)
+        {
+            foreach(RaycastHit2D rc in hits)
+            {
+                if(rc.transform.GetComponent<Interacteble>())
+                {
+                    rc.transform.GetComponent<Interacteble>().Interact();
+                    return;
+                }
+            }
+        }
     }
 }
